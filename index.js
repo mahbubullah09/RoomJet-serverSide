@@ -39,7 +39,7 @@ async function run() {
     const roomCollection = client.db('RoomJet').collection("roomDetails");
 
 
-    //client api
+//client api
 app.get('/rooms',  async(req,res)=>{
     const cursor = roomCollection.find();
     const result = await cursor.toArray();
@@ -52,6 +52,8 @@ app.get('/rooms/:id',  async(req,res) =>{
     const result = await roomCollection.findOne(query);
     res.send(result)
 })
+
+
 
 
     // Send a ping to confirm a successful connection
