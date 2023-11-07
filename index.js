@@ -54,7 +54,7 @@ app.get('/rooms/:id',  async(req,res) =>{
     res.send(result)
 })
 
-
+//post booking
 app.post('/bookings', async (req,res) =>{
     const Bookings = req.body;
     console.log(Bookings);
@@ -66,6 +66,18 @@ app.post('/bookings', async (req,res) =>{
 app.get('/bookings',  async(req,res)=>{
     const cursor = bookingCollection.find();
     const result = await cursor.toArray();
+    res.send(result);
+})
+
+app.get('/booked', async (req,res) =>{
+    console.log(req.query.room_id);
+
+    let query= {};
+  
+    if(req.query?.room_id){
+        query = {room_id: req.query.room_id}
+    }
+      const result = await bookingCollection.find(query).toArray();
     res.send(result);
 })
 
