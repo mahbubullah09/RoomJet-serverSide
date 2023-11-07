@@ -110,6 +110,21 @@ app.get('/reviews',  async(req,res)=>{
     res.send(result);
 })
 
+app.get('/review/rooms', async (req,res) =>{
+    console.log(req.query.room_id);
+
+    let query= {};
+  
+    if(req.query?.room_id){
+        query = {room_id: req.query.room_id}
+    }
+      const result = await reviewCollection.find(query).toArray();
+    res.send(result);
+})
+
+
+
+
 
 
 
