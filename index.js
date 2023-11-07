@@ -37,6 +37,7 @@ async function run() {
 
 
     const roomCollection = client.db('RoomJet').collection("roomDetails");
+    const bookingCollection = client.db('RoomJet').collection("Bookings");
 
 
 //client api
@@ -52,6 +53,22 @@ app.get('/rooms/:id',  async(req,res) =>{
     const result = await roomCollection.findOne(query);
     res.send(result)
 })
+
+
+app.post('/bookings', async (req,res) =>{
+    const Bookings = req.body;
+    console.log(Bookings);
+    const result = await bookingCollection.insertOne(Bookings)
+    res.send(result);
+})
+
+//get all bookings
+app.get('/bookings',  async(req,res)=>{
+    const cursor = bookingCollection.find();
+    const result = await cursor.toArray();
+    res.send(result);
+})
+
 
 
 
@@ -76,5 +93,8 @@ run().catch(console.dir);
 app.listen(port , () => {
     console.log(`RoomJet is running on port ${port}`);
 })
+
+//bookings
+
 
   
