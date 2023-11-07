@@ -38,6 +38,7 @@ async function run() {
 
     const roomCollection = client.db('RoomJet').collection("roomDetails");
     const bookingCollection = client.db('RoomJet').collection("Bookings");
+    const reviewCollection = client.db('RoomJet').collection("Reviews");
 
 
 //client api
@@ -91,6 +92,14 @@ app.get('/booked/email', async (req,res) =>{
         query = {email: req.query.email}
     }
       const result = await bookingCollection.find(query).toArray();
+    res.send(result);
+})
+
+//post review
+app.post('/reviews', async (req,res) =>{
+    const Reviews = req.body;
+    console.log(Reviews);
+    const result = await reviewCollection.insertOne(Reviews)
     res.send(result);
 })
 
