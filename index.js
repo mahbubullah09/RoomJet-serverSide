@@ -12,7 +12,11 @@ const port = process.env.PORT || 5000;
 
 //middlewere
 app.use(cors({
-    origin: ['http://localhost:5173'],
+    origin: [
+        // 'http://localhost:5173'
+        'https://roomjet-1d0e8.web.app',
+        'https://roomjet-1d0e8.firebaseapp.com'
+    ],
     credentials: true
   }));
   app.use(express.json());
@@ -33,8 +37,7 @@ app.use(cors({
       return res.status(401).send({ message: 'Not Authorizes'})
   
     }
-  
-    jwt.verify(token, process.env.Token, (err,decode) =>{
+      jwt.verify(token, process.env.Token, (err,decode) =>{
       //error
       if(err){
         console.log(err);
@@ -43,6 +46,8 @@ app.use(cors({
       //decode
       console.log('value of token:', decode);
       req.user= decode;
+      console.log(decode);
+
       next();
     })
     
@@ -69,12 +74,21 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
 
     const roomCollection = client.db('RoomJet').collection("roomDetails");
     const bookingCollection = client.db('RoomJet').collection("Bookings");
     const reviewCollection = client.db('RoomJet').collection("Reviews");
+
+//logut token
+    app.post('/logout', async (req, res) => {
+      const user = req.body;
+      console.log('logging out', user);
+      res
+          .clearCookie('token', { maxAge: 0, sameSite: 'none', secure: true })
+          .send({ success: true })
+   })
 
 
     //auth api
@@ -87,11 +101,9 @@ app.post('/jwt', async(req,res) =>{
   
     const token = jwt.sign(user, process.env.Token, {expiresIn: '1h'})
     res
-    .cookie('token', token,{
-      httpOnly: true,
-      secure: false
-    
-    })
+    .cookie('token', token, { httpOnly: true, 
+      secure: process.env.NODE_ENV === 'production', 
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict', })
     .send({success: true})
   })
 
@@ -190,11 +202,11 @@ app.get('/booked/email', verifyToken, logger,  async (req,res) =>{
     let query= {};
   
     if(req.query?.email){
-        query = {email: req.query.email}
+        query = {email: req?.query?.email}
     }
-    console.log("token", req.cookies.token);
-    console.log('user in token', req.user);
-    if(req.query.email !== req.user.email){
+    console.log("token", req?.cookies?.token);
+    console.log('user in token', req?.user);
+    if(req?.query?.email !== req?.user?.email){
       return res.status(403).send({ message: 'Forbidden access'})
     }
 
