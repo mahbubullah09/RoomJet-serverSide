@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-// const cookieParsar = require('cookie-parser')
+const cookieParsar = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId, ReturnDocument } = require('mongodb');
 require('dotenv').config();
 const app =express();
@@ -16,7 +16,38 @@ app.use(cors({
     credentials: true
   }));
   app.use(express.json());
-//   app.use(cookieParsar());
+  app.use(cookieParsar());
+
+
+
+  const logger = async(req,res,next ) =>{
+    console.log("called", req.host , req.originalUrl);
+    next();
+  }
+  
+  const verifyToken = async(req,res, next)=> {
+  
+    const token = req.cookies?.token;
+    console.log('value of token', token);
+    if(!token){
+      return res.status(401).send({ message: 'Not Authorizes'})
+  
+    }
+  
+    jwt.verify(token, process.env.Token, (err,decode) =>{
+      //error
+      if(err){
+        console.log(err);
+        return res.status(401).send({ message: 'Not Authorizes'})
+      }
+      //decode
+      console.log('value of token:', decode);
+      req.user= decode;
+      next();
+    })
+    
+  
+  }
   
   
 
@@ -140,6 +171,8 @@ app.put('/bookings/:id', async(req,res)=>{
 app.get('/booked', async (req,res) =>{
     console.log(req.query.room_id);
 
+
+
     let query= {};
   
     if(req.query?.room_id){
@@ -150,14 +183,25 @@ app.get('/booked', async (req,res) =>{
 })
 
 //user
-app.get('/booked/email', async (req,res) =>{
+app.get('/booked/email', verifyToken, logger,  async (req,res) =>{
     console.log(req.query.email);
+    console.log('token', req.cookies.token);
 
     let query= {};
   
     if(req.query?.email){
         query = {email: req.query.email}
     }
+    console.log("token", req.cookies.token);
+    console.log('user in token', req.user);
+    if(req.query.email !== req.user.email){
+      return res.status(403).send({ message: 'Forbidden access'})
+    }
+
+
+
+
+
       const result = await bookingCollection.find(query).toArray();
     res.send(result);
 })
