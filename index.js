@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-// const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 // const cookieParsar = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId, ReturnDocument } = require('mongodb');
 require('dotenv').config();
@@ -11,9 +11,14 @@ const port = process.env.PORT || 5000;
 // FGXiE4BkXYXow1A6
 
 //middlewere
-
-app.use(cors());
-app.use(express.json());
+app.use(cors({
+    origin: ['http://localhost:5173'],
+    credentials: true
+  }));
+  app.use(express.json());
+//   app.use(cookieParsar());
+  
+  
 
 
 
@@ -39,6 +44,25 @@ async function run() {
     const roomCollection = client.db('RoomJet').collection("roomDetails");
     const bookingCollection = client.db('RoomJet').collection("Bookings");
     const reviewCollection = client.db('RoomJet').collection("Reviews");
+
+
+    //auth api
+    console.log(process.env.Token)
+app.post('/jwt', async(req,res) =>{
+    const user = req.body;
+    console.log(user);
+   
+ 
+  
+    const token = jwt.sign(user, process.env.Token, {expiresIn: '1h'})
+    res
+    .cookie('token', token,{
+      httpOnly: true,
+      secure: false
+    
+    })
+    .send({success: true})
+  })
 
 
 //client api
