@@ -84,6 +84,33 @@ app.delete('/bookings/:id', async (req,res) =>{
     res.send(result);
 })
 
+//update
+
+app.put('/bookings/:id', async(req,res)=>{
+    const id = req.params.id;
+    const filter ={_id : new ObjectId(id)}
+    const options = {upsert: true};
+    const updatedBookings= req.body;
+    const info ={
+        $set: {
+             room_name: updatedBookings. room_name, 
+             price: updatedBookings.price, 
+            image: updatedBookings.image, 
+            size: updatedBookings.size, 
+            room_id: updatedBookings.room_id, 
+            Name: updatedBookings.Name, 
+            email: updatedBookings.email,
+            phone: updatedBookings.phone,
+            date: updatedBookings.date
+        }
+    }
+
+    const result = await bookingCollection.updateOne(filter, info)
+    
+    res.send(result);
+})
+
+
 
 
 app.get('/booked', async (req,res) =>{
