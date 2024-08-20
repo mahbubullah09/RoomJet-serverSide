@@ -13,9 +13,9 @@ const port = process.env.PORT || 5000;
 //middlewere
 app.use(cors({
     origin: [
-        // 'http://localhost:5173'
-        'https://roomjet-1d0e8.web.app',
-        'https://roomjet-1d0e8.firebaseapp.com'
+        'http://localhost:5173',
+        'https://roomjet01.web.app',
+        'https://roomjet01.firebaseapp.com'
     ],
     credentials: true
   }));
