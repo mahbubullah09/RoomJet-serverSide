@@ -195,7 +195,7 @@ app.get('/booked', async (req,res) =>{
 })
 
 //user
-app.get('/booked/email', verifyToken, logger,  async (req,res) =>{
+app.get('/booked/email',   async (req,res) =>{
     console.log(req.query.email);
     console.log('token', req.cookies.token);
 
@@ -206,9 +206,7 @@ app.get('/booked/email', verifyToken, logger,  async (req,res) =>{
     }
     console.log("token", req?.cookies?.token);
     console.log('user in token', req?.user);
-    if(req?.query?.email !== req?.user?.email){
-      return res.status(403).send({ message: 'Forbidden access'})
-    }
+   
 
 
 
